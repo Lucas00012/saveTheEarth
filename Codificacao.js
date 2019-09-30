@@ -65,7 +65,7 @@ function moveJog(){
 	if(tecla==87){
 		py=-5;
 	}
-	if(tecla==68){//O EVENTO KEYDOWN TEM UM FRAME RATE MENOR QUE O requestAnimationFrame
+	if(tecla==68){
 		px=5;
 	}
 	if(tecla==83){
@@ -230,7 +230,7 @@ function testeColisao(){
 	i=0;
 	//TIRO C/ CHÃO + TIRO C/ BOMBA
 	while(i<tiros.length){
-		testeColisaoTiroBomba(i);//ERRO LOOPING INFINITO OU ELEMENTO UNDEFINED
+		testeColisaoTiroBomba(i);
 		if(tiros[i]){
 			if(tiros[i][2]<=0){
 				arena.removeChild(tiros[i][0]);
@@ -247,7 +247,7 @@ function tutorial(){
 	alert("MOVER:\nW-A-S-D\n\nATIRAR:\nEnter");
 }
 
-function testeColisaoTiroBomba(indiceTiro){//ERRO LOOPING INFINITO OU ELEMENTO UNDEFINED
+function testeColisaoTiroBomba(indiceTiro){
 	let i=0;
 	while(i<listBombas.length){
 		if(listBombas[i] && tiros[indiceTiro]){
@@ -296,4 +296,3 @@ document.addEventListener("keydown",jogAtira);
 document.addEventListener("keydown",moveJog);
 document.addEventListener("keyup",paraJog);
 document.getElementById("cmd_inicia").addEventListener("click",inicia);
-//alert(document.defaultView.getComputedStyle(arena, null)["width"]);
