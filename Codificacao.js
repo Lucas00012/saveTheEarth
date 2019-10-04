@@ -5,17 +5,21 @@ var qtdBombas=document.getElementById("oi");
 
 
 var emJogo=false;
-var posJogX=655;
-var posJogY=565;
+var posJogX=screen.width/2-25;
+var posJogY=screen.availHeight/2-75;
 var newJogX;
 var newJogY;
 var bombas;
 var px=0;
 var py=0;
-var arenaX=1369;
-var arenaY=615;
+var arenaX=screen.width;
+var arenaY=screen.availHeight-75;
 var totBombas=qtdBombas.innerHTML;
 var vida=100;
+
+menu.style.left=screen.width/2-200+"px";
+menu.style.top=screen.availHeight/2-275+"px";
+arena.style.height=screen.availHeight-75+"px";
 
 function inicia(){
 	bombas=150;
@@ -204,7 +208,6 @@ function gerenciaExpl(){
 var animationTesteColisao;
 function testeColisao(){
 	let i=0;
-	//BOMBA C/ CHÃO
 	while(i<listBombas.length){
 		if(listBombas[i]){
 			if(listBombas[i][1]+80>=arenaY){
@@ -228,7 +231,6 @@ function testeColisao(){
 		i=i+1;
 	}
 	i=0;
-	//TIRO C/ CHÃO + TIRO C/ BOMBA
 	while(i<tiros.length){
 		testeColisaoTiroBomba(i);
 		if(tiros[i]){
