@@ -6,7 +6,7 @@ var qtdBombas=document.getElementById("oi");
 
 var emJogo=false;
 var posJogX=screen.width/2-25;
-var posJogY=screen.availHeight/2-75;
+var posJogY=screen.availHeight/2-50;
 var newJogX;
 var newJogY;
 var bombas;
@@ -18,7 +18,7 @@ var totBombas=qtdBombas.innerHTML;
 var vida=100;
 
 menu.style.left=screen.width/2-200+"px";
-menu.style.top=screen.availHeight/2-275+"px";
+menu.style.top=screen.availHeight/2-250+"px";
 arena.style.height=screen.availHeight-75+"px";
 
 function inicia(){
