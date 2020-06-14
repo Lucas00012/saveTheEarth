@@ -11,6 +11,7 @@ var newJogX;
 var newJogY;
 var bombas;
 var px=0;
+var recarga=0;
 var py=0;
 var arenaX=screen.width;
 var arenaY=screen.availHeight-75;
@@ -22,6 +23,7 @@ menu.style.top=screen.availHeight/2-250+"px";
 arena.style.height=screen.availHeight-75+"px";
 
 function inicia(){
+	emJogo=true;
 	bombas=150;
 	vida=100;
 	tempLiberacao=0;
@@ -53,72 +55,54 @@ function inicia(){
 	jogador.style.display="block";
 	menu.style.display="none";
 	qtdBombas.innerHTML=totBombas+" "+bombas;
-	engineJog();
+	gameEngine();
+}
+
+var gameCall;
+function gameEngine(){
 	liberarBombas();
-	moveBombas();
-	testeColisao();
+	engineJog();
 	moveTiros();
+	moveBombas();
 	gerenciaExpl();
+	testeColisao();
+	recarga++;
+	if(!emJogo) return;
+	gameCall=requestAnimationFrame(gameEngine);
 }
 
 function moveJog(){
 	var tecla=event.keyCode;
-	if(tecla==65){
-		px=-5;
-	}
-	if(tecla==87){
-		py=-5;
-	}
-	if(tecla==68){
-		px=5;
-	}
-	if(tecla==83){
-		py=5;
-	}
+	if(tecla==65) px=-5;
+	if(tecla==87) py=-5;
+	if(tecla==68) px=5;
+	if(tecla==83) py=5;
 }
 function paraJog(){
 	var tecla=event.keyCode;
-	if(tecla==65){
-		px=0;
-	}
-	if(tecla==87){
-		py=0;
-	}
-	if(tecla==68){
-		px=0;
-	}
-	if(tecla==83){
-		py=0;
-	}
+	if(tecla==65) px=0;
+	if(tecla==87) py=0;
+	if(tecla==68) px=0;
+	if(tecla==83) py=0;
 }
 
-var animationJog;
 function engineJog(){
 	newJogX=newJogX+px;
 	newJogY=newJogY+py;
-	if(newJogX<=0 || newJogX+50>=arenaX){
-		newJogX=newJogX-px;
-	}
-	if(newJogY<=0 || newJogY+50>=arenaY){
-		newJogY=newJogY-py;
-	}
+	if(newJogX<=0 || newJogX+50>=arenaX) newJogX=newJogX-px;
+	if(newJogY<=0 || newJogY+50>=arenaY) newJogY=newJogY-py;
 	jogador.style.top=newJogY+"px";
 	jogador.style.left=newJogX+"px";
-	animationJog=requestAnimationFrame(engineJog);
 }
 
 var tiros=[];
 function jogAtira(){
 	var tecla=event.keyCode;
-	if(tecla==13){
+	if(tecla==13 && recarga>=20){
+		recarga=0;
 		let tiro=document.createElement("div");
-		tiro.style.width=10+"px";
-		tiro.style.height=10+"px";
 		arena.appendChild(tiro);
-		tiro.style.backgroundColor="#2EFE2E";
-		tiro.style.borderRadius="10px";
-		tiro.style.boxShadow="2px 2px 2px rgba(0,0,0,0.5)";
-		tiro.style.position="fixed";
+		tiro.setAttribute("class","tiro");
 		tiro.style.left=newJogX+50/2-5+"px";
 		tiro.style.top=newJogY-8+"px";
 		let info=[tiro,newJogX+50/2-5,newJogY-8]
@@ -126,56 +110,39 @@ function jogAtira(){
 	}
 }
 
-var animationTiro;
 function moveTiros(){
-	let i=0;
-	while(i<tiros.length){
+	for(var i=0;i<tiros.length;i++){
 		tiros[i][2]=tiros[i][2]-10;
 		tiros[i][0].style.top=tiros[i][2]+"px";
-		i=i+1;
 	}
-	animationTiro=requestAnimationFrame(moveTiros);
 }
 
 var tempLiberacao=0;
 var listBombas=[];
-var animationBomba;
 function liberarBombas(){
 	tempLiberacao=tempLiberacao+1;
 	if(tempLiberacao==150 && bombas>0){
 		bombas=bombas-1;
 		qtdBombas.innerHTML=totBombas+" "+bombas;
-		if(bombas==0 && vida>0 && listBombas==""){
-			fimJogo(0);
-		}
+		if(bombas==0 && vida>0 && listBombas=="") fimJogo(0);
 		tempLiberacao=0;
 		let bombasArena=document.createElement("div");
-		bombasArena.style.height="80px";
-		bombasArena.style.width="20px";
-		bombasArena.style.background="url('Imagens/missil2.png')";
-		bombasArena.style.backgroundSize="cover";
+		bombasArena.setAttribute("class","bomba");
 		let randXbomba=Math.round(Math.random()*(arenaX-60)+30);
-		bombasArena.style.position="absolute";
 		bombasArena.style.left=randXbomba+"px";
-		bombasArena.style.top="-80px";
 		arena.appendChild(bombasArena);
 		let info=[bombasArena,-80,randXbomba];
 		listBombas.push(info);
 	}
-	animationBomba=requestAnimationFrame(liberarBombas);
 }
 
-var animationBomba2;
 function moveBombas(){
 	if(listBombas!=""){
-		let i=0;
-		while(i<listBombas.length){
+		for(var i=0;i<listBombas.length;i++){
 			listBombas[i][1]=listBombas[i][1]+2;
 			listBombas[i][0].style.top=listBombas[i][1]+"px";
-			i=i+1;
 		}
 	}
-	animationBomba2=requestAnimationFrame(moveBombas);
 }
 
 var createTemp=0;
@@ -193,22 +160,17 @@ function vcreate(x,y){
 }
 
 function gerenciaExpl(){
-	let i=0;
-	while(i<listExpl.length){
+	for(var i=0;i<listExpl.length;i++){
 		listExpl[i][1]=listExpl[i][1]-1;
 		if(listExpl[i][1]==0){
 			listExpl[i][0].remove();
 			listExpl.shift();
 		}
-		i=i+1;
 	}
-	engineCreate=requestAnimationFrame(gerenciaExpl);
 }
 
-var animationTesteColisao;
 function testeColisao(){
-	let i=0;
-	while(i<listBombas.length){
+	for(var i=0;i<listBombas.length;i++){
 		if(listBombas[i]){
 			if(listBombas[i][1]+80>=arenaY){
 				vcreate(listBombas[i][2],listBombas[i][1]);
@@ -217,21 +179,13 @@ function testeColisao(){
 				vida=vida-20;
 				vidaR.style.width=vida+"%";
 				i=i-1;
-				if(vida==0){
-					fimJogo(1);
-				}
-				else if(listBombas=="" && bombas==0 && vida>0){
-					fimJogo(0);
-				}
+				if(vida==0) fimJogo(1);
+				else if(listBombas=="" && bombas==0 && vida>0) fimJogo(0);
 			}
-			else if(newJogY<=listBombas[i][1]+80 && newJogY+50>=listBombas[i][1] && newJogX+50>=listBombas[i][2] && newJogX<=listBombas[i][2]+20){
-				fimJogo(1);
-			}
+			else if(newJogY<=listBombas[i][1]+80 && newJogY+50>=listBombas[i][1] && newJogX+50>=listBombas[i][2] && newJogX<=listBombas[i][2]+20) fimJogo(1);
 		}
-		i=i+1;
 	}
-	i=0;
-	while(i<tiros.length){
+	for(var i=0;i<tiros.length;i++){
 		testeColisaoTiroBomba(i);
 		if(tiros[i]){
 			if(tiros[i][2]<=0){
@@ -240,9 +194,7 @@ function testeColisao(){
 				i=i-1;
 			}
 		}
-		i=i+1;
 	}
-	animationTesteColisao=requestAnimationFrame(testeColisao);
 }
 
 function tutorial(){
@@ -250,8 +202,7 @@ function tutorial(){
 }
 
 function testeColisaoTiroBomba(indiceTiro){
-	let i=0;
-	while(i<listBombas.length){
+	for(var i=0;i<listBombas.length;i++){
 		if(listBombas[i] && tiros[indiceTiro]){
 			if(tiros[indiceTiro][1]+20>=listBombas[i][2] && tiros[indiceTiro][1]<=listBombas[i][2]+20 && listBombas[i][1]+80>=tiros[indiceTiro][2]){
 				vcreate(listBombas[i][2],listBombas[i][1]);
@@ -260,16 +211,14 @@ function testeColisaoTiroBomba(indiceTiro){
 				tiros.splice(indiceTiro,1);
 				listBombas.splice(i,1);
 				i=i-1;
-				if(bombas==0 && listBombas=="" && vida>0){
-					fimJogo(0);
-				}
+				if(bombas==0 && listBombas=="" && vida>0) fimJogo(0);
 			}
 		}
-		i=i+1;
 	}
 }
 	
 function fimJogo(end){
+	emJogo=false;
 	arena.style.display="none";
 	menu.style.display="block";
 	if(end==1){
@@ -284,12 +233,7 @@ function fimJogo(end){
 	}
 	menu.style.backgroundSize="cover";
 	jogador.style.display="none";
-	cancelAnimationFrame(animationTesteColisao);
-	cancelAnimationFrame(engineCreate);
-	cancelAnimationFrame(animationBomba);
-	cancelAnimationFrame(animationBomba2);
-	cancelAnimationFrame(animationTiro);
-	cancelAnimationFrame(animationJog);
+	cancelAnimationFrame(gameCall);
 }
 		
 	
